@@ -1,9 +1,20 @@
 class Play extends Phaser.Scene {
     constructor() {
         super("playScene")
+        this.playerSpeed = 200
+    }
+
+    preload() {
+        this.load.path = './assets/'
+        this.load.audio('collect', 'collect.mp3')
+        this.load.audio('background', 'background.wav')
+        this.load.audio('ending', 'ending.wav')
     }
 
     create() {
+        // background music
+        this.sound.play('background',  {volume: 0.5, loop: true })
+
         this.isGameOver = false 
 
         // scrolling background
@@ -69,15 +80,14 @@ class Play extends Phaser.Scene {
         this.physics.add.overlap(this.hero, this.diamonds, this.collectDiamond, null, this)
         this.physics.add.overlap(this.hero, this.apples, this.collectApple, null, this)
 
-        // display time and points
+        // display time, distance, and points
         this.score = 0
-        this.scoreText = this.add.text(16, 16, 'Score: 0', { fontSize: '15px', fill: '#fff' }).setScrollFactor(0).setOrigin(1, 0).setDepth(1002).setX(this.cameras.main.width - 16)
-        this.timeText = this.add.text(16, 40, '', { fontSize: '15px', fill: '#fff' }).setScrollFactor(0).setOrigin(1, 0).setDepth(1002).setX(this.cameras.main.width - 16)
+        this.playerStartY= this.hero.y
+        this.totalDistanceMoved = 0
 
-        // Switch to a different scene
-        // if (this.playerScore >= 140) {
-        //     this.scene.start('playScene2')
-        // }
+        this.scoreText = this.add.text(16, 16, 'Score: 0', { fontSize: '15px', fill: '#fff' }).setScrollFactor(0).setOrigin(1, 0).setDepth(1002).setX(this.cameras.main.width - 16)
+        // this.distanceText = this.add.text(16, 40, 'Distance: 0', { fontSize: '15px', fill: '#fff' }).setScrollFactor(0).setOrigin(1, 0).setDepth(1002).setX(this.cameras.main.width - 16)
+        this.timeText = this.add.text(16, 40, '', { fontSize: '15px', fill: '#fff' }).setScrollFactor(0).setOrigin(1, 0).setDepth(1002).setX(this.cameras.main.width - 16)
 
         // update the timer
         this.initialTime = 0
@@ -108,11 +118,14 @@ class Play extends Phaser.Scene {
         this.cameras.main.startFollow(this.hero, true, 0.5, 0.5)
         this.physics.world.setBounds(0, 0, this.map.width, this.map.height)
 
-        // display menu
-        this.createGameOverMenu()
-
-        // update instruction text
-        // document.getElementById('info').innerHTML = '<strong>CharacterFSM.js:</strong> Arrows: move | SPACE: attack | SHIFT: dash attack | F: spin attack | H: hurt (knockback) | D: debug (toggle)'
+        this.scale.on('resize', (gameSize) => {
+            // Recalculate the center of the canvas
+            const newCenterX = gameSize.width / 2;
+            const newCenterY = gameSize.height / 2;
+    
+            // Reposition the game over menu
+            this.gameOverMenu.setPosition(newCenterX, newCenterY)
+        })
     }
 
     update() {
@@ -122,13 +135,19 @@ class Play extends Phaser.Scene {
             this.map.tilePositionY -= 2
         }
 
+        // if (this.isPlayerAtScreenEdge(this.hero)) {
+        //     this.createGameOverMenu()
+        //     this.physics.pause() 
+        //     this.isGameOver = true
+        // }
+
         // scroll Hero backwards
         const moveThreshold = 0
         const currentTime = this.time.now
         const backwardSpeed = 2
 
         if (!this.isGameOver) {
-        // Check for movement input
+            // Check for movement input
             if (this.cursors.left.isDown || this.cursors.right.isDown || this.cursors.up.isDown || this.cursors.down.isDown) {
                 this.lastMoveTime = currentTime
             }
@@ -153,6 +172,7 @@ class Play extends Phaser.Scene {
         // update player health
         this.playerHealth -= 1
         this.updateHealth(this.playerHealth)
+        this.sound.play('hit')
 
         // hit
         hero.setAlpha(0.5)
@@ -162,8 +182,8 @@ class Play extends Phaser.Scene {
         }, [], this)
 
         // check for ending
-        if (this.playerHealth == 0) {
-            this.gameOverMenu.setVisible(true)
+        if (this.playerHealth <= 0) {
+            this.createGameOverMenu()
        
             this.physics.pause() 
             hero.setTint(0xff0000)
@@ -175,9 +195,14 @@ class Play extends Phaser.Scene {
     }
 
     createGameOverMenu() {
+        this.sound.stopByKey('background')
+        this.sound.play('ending')
         // align to the center
-        const centerX = this.cameras.main.centerX
-        const centerY = this.cameras.main.centerY
+        const canvasWidth = this.game.scale.width
+        const canvasHeight = this.game.scale.height
+
+        const centerX = canvasWidth / 2
+        const centerY = canvasHeight / 2
     
         this.gameOverMenu = this.add.container(centerX, centerY).setDepth(1000)
     
@@ -188,8 +213,15 @@ class Play extends Phaser.Scene {
         this.gameOverMenu.add([menuBackground, restartButton, titleButton])
     
         // menu buttons
-        restartButton.on('pointerdown', () => this.scene.restart())
-        titleButton.on('pointerdown', () => this.scene.start('menuScene'))
+        restartButton.on('pointerdown', () =>  {
+            this.sound.play('click')
+            this.scene.restart()
+        })
+  
+        titleButton.on('pointerdown', () => {
+            this.sound.play('click')
+            this.scene.start('menuScene') 
+        })
 
         // hover effect
         restartButton.on('pointerover', () => {
@@ -205,9 +237,6 @@ class Play extends Phaser.Scene {
         titleButton.on('pointerout', () => {
             titleButton.setScale(0.5)
         })
-    
-        // hide the menu
-        this.gameOverMenu.setVisible(false)
     }
 
     updateHealth(health) {
@@ -241,6 +270,7 @@ class Play extends Phaser.Scene {
         diamond.disableBody(true, true)
         this.score += 20 // add points
         this.scoreText.setText('Score: ' + this.score)
+        this.sound.play('collect')
     }
 
     // apple
@@ -256,5 +286,15 @@ class Play extends Phaser.Scene {
         apple.disableBody(true, true)
         this.score += 10 // add points
         this.scoreText.setText('Score: ' + this.score)
+        this.sound.play('collect')
     }
+
+    // isPlayerAtScreenEdge(hero) {
+    //     let atLeftEdge = hero.x - hero.displayWidth / 2 <= 0
+    //     let atRightEdge = hero.x + hero.displayWidth / 2 >= 400
+    //     let atTopEdge = hero.y - hero.displayHeight / 2 <= 0
+    //     let atBottomEdge = hero.y + hero.displayHeight / 2 >= 300
+    
+    //     return atLeftEdge || atRightEdge || atTopEdge || atBottomEdge
+    // }
 }

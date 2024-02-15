@@ -6,7 +6,7 @@ class Load extends Phaser.Scene {
     preload() {
         // load the visual goodz
         this.load.path = './assets/'
-        this.load.spritesheet('hero', 'hero-sheet02.png', {
+        this.load.spritesheet('hero', 'hero-sheet.png', {
             frameWidth: 32,
             frameHeight: 32,
         })
@@ -15,6 +15,12 @@ class Load extends Phaser.Scene {
         this.load.image('diamond', 'diamond.png')
         this.load.image('apple', 'apple.png')
         this.load.image('trees', 'trees.png')
+
+        // load audio
+        this.load.audio('click', 'click.mp3')
+        this.load.audio('hit', 'hit.mp3')
+        this.load.audio('collect', 'collect.mp3')
+        this.load.audio('background', 'background.wav')
     }
 
     create() {

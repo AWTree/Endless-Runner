@@ -5,13 +5,14 @@ class Menu extends Phaser.Scene {
 
     preload() {
         // Preload assets
-        this.load.path = './assets/buttons/'
+        this.load.path = './assets/'
         // this.load.image('menuBackground', 'menuBackground.png')
-        this.load.image('playButton', 'playButton.png')
-        this.load.image('tutorialButton', 'tutorialButton.png')
-        this.load.image('creditsButton', 'creditsButton.png')
-        this.load.image('returnButton', 'returnButton.png')
-        this.load.image('restartButton', 'restartButton.png')
+        this.load.image('playButton', 'buttons/playButton.png')
+        this.load.image('tutorialButton', 'buttons/tutorialButton.png')
+        this.load.image('creditsButton', 'buttons/creditsButton.png')
+        this.load.image('returnButton', 'buttons/returnButton.png')
+        this.load.image('restartButton', 'buttons/restartButton.png')
+        this.load.audio('click', 'click.mp3')
     }
 
     create() {
@@ -25,6 +26,7 @@ class Menu extends Phaser.Scene {
         // Play 
         let playButton = this.add.image(200, 120, 'playButton').setInteractive().setScale(0.5)
         playButton.on('pointerdown', () => {
+            this.sound.play('click')
             this.scene.start('loadScene')
         })
 
@@ -38,7 +40,7 @@ class Menu extends Phaser.Scene {
         // Tutorial 
         let tutorialButton = this.add.image(200, 180, 'tutorialButton').setInteractive().setScale(0.5)
         tutorialButton.on('pointerdown', () => {
-            // Here you would switch to a tutorial scene
+            this.sound.play('click')
             this.scene.start('tutorialScene')
         })
 
@@ -52,7 +54,7 @@ class Menu extends Phaser.Scene {
         // Credits 
         let creditsButton = this.add.image(200, 240, 'creditsButton').setInteractive().setScale(0.5)
         creditsButton.on('pointerdown', () => {
-            // Here you would switch to a credits scene
+            this.sound.play('click')
             this.scene.start('creditsScene')
         })
 
