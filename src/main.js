@@ -1,21 +1,16 @@
-// Endless Forest
 // Name: Arno Wu
-// 20h
-// Use multiple Scene classes (dictated by your game's style) (1)
-// Properly transition between Scenes and allow the player to restart w/out having to reload the page (1)
-// Include in-game instructions using text or other means (e.g., tooltips, tutorial, diagram, etc.) (1)
-// Have some form of player input/control appropriate to your game design (1)
-// Include one or more animated characters that use a texture atlas/sprite sheet* (1)
-// Simulate scrolling with a tileSprite (or equivalent means) (1)
-// Implement proper collision detection (via Arcade Physics or a custom routine) (1)
-// Have looping background music* (1)
-// Use a minimum of four sound effects for key mechanics, UI, and/or significant events appropriate to your game design (1)
-// Use randomness to generate escalating challenge, e.g. terrain, pickups, etc. (1)
-// Include some metric of accomplishment that a player can improve over time, e.g., score, survival time, etc. (1)
-// Be theoretically endless (1)
-// Be playable for at least 15 seconds for a new player of low to moderate skill (1)
-// Run without significant crashes or errors (1)
-// Include in-game credits for all roles, assets, music, etc. (1)
+// Title: Endless Forest
+// Approximate Time: 20h
+/* 
+Creative Tilt: I made a top-down perspective Endless Runner that is different from the side-scrolling one.
+The idea is a lost boy trying to escape the forest. For the UI&UX design, I made the UI buttons scale up when hovering
+which I think is visually appealing. For visual style, the art pieces were all designed by myself. 
+Also, I painted the pixel sprites in more detail to make them more stylized.
+I am proud of the apple sprite, the diamond sprite, and the player sprite for their art style. Besides, I am proud of 
+the background music that I made with 3 different instruments in GarageBand since I am a complete beginner to music by any means.
+For the programming part, I am proud that I made the player able to pass through the trees for a few seconds after
+colliding with them. I think this would make the gameplay more fluent. 
+*/
 
 'use strict'
 
